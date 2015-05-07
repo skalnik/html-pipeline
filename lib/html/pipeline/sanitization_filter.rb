@@ -105,7 +105,10 @@ module HTML
 
       # Sanitize markup using the Sanitize library.
       def call
-        Sanitize.clean_node!(doc, whitelist)
+        clean = doc.clone
+        sanitized = Sanitize.clean_node!(doc, whitelist)
+        result[:sanitized] ||= sanitized.to_s != clean.to_s
+        sanitized
       end
 
       # The whitelist to use when sanitizing. This can be passed in the context

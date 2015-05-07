@@ -104,6 +104,17 @@ class HTML::Pipeline::SanitizationFilterTest < Minitest::Test
     assert_equal SanitizationFilter::ANCHOR_SCHEMES, ['http', 'https', 'mailto', :relative, 'github-windows', 'github-mac']
   end
 
+  def test_sets_sanitized_key_only_if_something_is_removed
+    sanitize_result = {}
+    clean_result = {}
+    to_sanitize = '<script>JavaScript!</script>'
+    clean = '<summary>Foo</summary>'
+    SanitizationFilter.call(to_sanitize, {}, sanitize_result)
+    SanitizationFilter.call(clean, {}, clean_result)
+    assert !clean_result[:sanitized], "Shouldn't flag things that are clean"
+    assert sanitize_result[:sanitized]
+  end
+
   def test_script_contents_are_removed
     orig = '<script>JavaScript!</script>'
     assert_equal "", SanitizationFilter.call(orig).to_s
